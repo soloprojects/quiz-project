@@ -29,9 +29,20 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign({
         name: user.name,
-        sub: user.id,
+        email: user.email,
+        id: user.id,
         role: user.role,
       }),
     };
   }
+  
+  async verifyJwt(jwt: string): Promise<{ exp: number }> {
+    try {
+      const { exp } = await this.jwtService.verifyAsync(jwt);
+      return { exp };
+    } catch (error) {
+      throw new HttpException('Invalid JWT', HttpStatus.UNAUTHORIZED);
+    }
+  }
+  
 }

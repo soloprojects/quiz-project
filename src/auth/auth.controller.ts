@@ -5,6 +5,8 @@ import {
   Post,
   Request,
   UseGuards,
+  HttpCode, 
+  HttpStatus
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -19,8 +21,16 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req, @Body() loginDto: LoginDto): Promise<any> {
-    return this.authService.generateToken(req.user);
+  async login(@Request() req, @Body() loginDto: LoginDto): Promise<{token:string | null}> {
+	  
+	return {token:this.authService.generateToken(req.user)}
+	
+  }
+  
+  @Post('verify-jwt')
+  @HttpCode(HttpStatus.OK)
+  verifyJwt(@Body() payload: { jwt: string }) {
+    return this.authService.verifyJwt(payload.jwt);
   }
 
   @ApiBearerAuth()
